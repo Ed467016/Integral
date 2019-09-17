@@ -1,0 +1,60 @@
+﻿<Window x:Class="Integral.GUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Integral.GUI"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.4*" />
+            <ColumnDefinition Width="0.6*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="1">
+            <StackPanel Orientation="Vertical">
+                <TextBox Height="50" 
+                         FontSize="16" 
+                         Margin="15" 
+                         BorderThickness="2" 
+                         BorderBrush="Black">
+
+                </TextBox>
+                <StackPanel Height="80" 
+                            Margin="15 15 15 0"
+                            Orientation="Vertical">
+                    <DockPanel Height="30"
+                               VerticalAlignment="Center">
+                        <TextBlock Margin="5"
+                                   DockPanel.Dock="Left"
+                                   Width="30">
+                            From
+                        </TextBlock>
+                        <Slider Minimum="-360"
+                                Maximum="360"
+                                Name="slValue">
+                        </Slider>
+                    </DockPanel>
+                    <DockPanel Height="30">
+                        <TextBlock Margin="5"
+                                   DockPanel.Dock="Left"
+                                   Width="30">
+                            To
+                        </TextBlock>
+                        <Slider Minimum="-360"
+                                Maximum="360"
+                                HorizontalAlignment="Stretch">
+                        </Slider>
+                    </DockPanel>
+                </StackPanel>
+                <Button HorizontalAlignment="Right" 
+                        Margin="15 0"
+                        Width="80"
+                        Height="40">
+                    Calculate
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
