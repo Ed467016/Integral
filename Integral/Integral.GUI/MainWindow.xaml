@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Integral.GUI"
         mc:Ignorable="d"
+        xmlns:oxy="http://oxyplot.org/wpf"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -12,48 +13,91 @@
             <ColumnDefinition Width="0.6*" />
         </Grid.ColumnDefinitions>
 
+        <oxy:PlotView Model="{Binding MainPlot}"
+                          Controller="{Binding Controller}"/>
+
         <Grid Grid.Column="1">
             <StackPanel Orientation="Vertical">
                 <TextBox Height="50" 
                          FontSize="16" 
-                         Margin="15" 
+                         Margin="15 15 15 0" 
                          BorderThickness="2" 
-                         BorderBrush="Black">
+                         BorderBrush="Black"
+                         Text="{Binding Formula}"
+                         TextWrapping="Wrap"/>
 
-                </TextBox>
-                <StackPanel Height="80" 
-                            Margin="15 15 15 0"
-                            Orientation="Vertical">
-                    <DockPanel Height="30"
-                               VerticalAlignment="Center">
-                        <TextBlock Margin="5"
+                <Grid Margin="15 15 15 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.1*"/>
+                        <ColumnDefinition Width="0.4*"/>
+                        <ColumnDefinition Width="0.1*"/>
+                        <ColumnDefinition Width="0.4*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Margin="0 5 5 5"
                                    DockPanel.Dock="Left"
-                                   Width="30">
+                                   Width="30"
+                                   Grid.Column="0">
                             From
-                        </TextBlock>
-                        <Slider Minimum="-360"
-                                Maximum="360"
-                                Name="slValue">
-                        </Slider>
-                    </DockPanel>
-                    <DockPanel Height="30">
-                        <TextBlock Margin="5"
+                    </TextBlock>
+
+                    <TextBox PreviewTextInput="NumberValidationTextBox"
+                                 Text="{Binding From}"
+                                 Grid.Column="1"/>
+
+                    <TextBlock Margin="0 5 5 5"
                                    DockPanel.Dock="Left"
-                                   Width="30">
+                                   Width="30"
+                                   Grid.Column="2">
                             To
-                        </TextBlock>
-                        <Slider Minimum="-360"
-                                Maximum="360"
-                                HorizontalAlignment="Stretch">
-                        </Slider>
-                    </DockPanel>
-                </StackPanel>
-                <Button HorizontalAlignment="Right" 
-                        Margin="15 0"
-                        Width="80"
-                        Height="40">
-                    Calculate
-                </Button>
+                    </TextBlock>
+
+                    <TextBox PreviewTextInput="NumberValidationTextBox"
+                                 Text="{Binding To}"
+                                 Grid.Column="3"/>
+                </Grid>
+                <Grid Margin="15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.55*"/>
+                        <ColumnDefinition Width="0.18*"/>
+                        <ColumnDefinition Width="0.27*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border BorderThickness="2"
+                            BorderBrush="Black"
+                            Height="30">
+                        <Grid>
+                            <Grid.ColumnDefinitions >
+                                <ColumnDefinition Width="0.4*"/>
+                                <ColumnDefinition Width="0.6*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border BorderBrush="Black"
+                                    Height="30"
+                                    BorderThickness="0 0 2 0">
+                                <TextBlock VerticalAlignment="Center"
+                                           HorizontalAlignment="Center">
+                                    Result
+                                </TextBlock>
+                            </Border>
+                            
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding Result}"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"/>
+                        </Grid>
+
+
+                    </Border>
+
+                    <Button HorizontalAlignment="Stretch"
+                            DockPanel.Dock="Right"
+                            Command="{Binding CalculateCommand}"
+                            Grid.Column="2"
+                            Height="30">
+                        Calculate
+                    </Button>
+                </Grid>
             </StackPanel>
         </Grid>
     </Grid>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.CSharp;
 
@@ -7,6 +8,14 @@ namespace Integral.Compiler
 {
     public class Compiler
     {
+        private static readonly Dictionary<string, string> _keys = new Dictionary<string, string>()
+        {
+            { "pow", "Math.Pow" },
+            { "sqrt", "Math.Sqrt" },
+            { "e", Math.E.ToString() },
+            { "pi", Math.PI.ToString() }
+        };
+
         private readonly CSharpCodeProvider m_provider = new CSharpCodeProvider();
         private readonly CompilerParameters m_parameters = new CompilerParameters();
 
@@ -33,6 +42,9 @@ namespace Integral.Compiler
 
         private static string[] GetCode(string code)
         {
+            foreach (var key in _keys)
+                code = code.Replace(key.Key, key.Value);
+
             return new string[]
             {
                 @"using System;
