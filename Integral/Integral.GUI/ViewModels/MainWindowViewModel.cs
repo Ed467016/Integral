@@ -112,7 +112,8 @@ namespace Integral.GUI.ViewModels
                     Position = AxisPosition.Left,
                     MaximumPadding = 0.1,
                     MinimumPadding = 0.1
-                });
+                });
+
                 MainPlot = model;
             }
         }
