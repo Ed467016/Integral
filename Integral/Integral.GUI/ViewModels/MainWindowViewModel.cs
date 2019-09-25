@@ -6,7 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Integral.GUI.ViewModels
@@ -50,6 +52,7 @@ namespace Integral.GUI.ViewModels
             {
                 formula = value;
                 OnPropertyChanged(nameof(Formula));
+                CalculateCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -84,37 +87,49 @@ namespace Integral.GUI.ViewModels
 
         public MainWindowViewModel()
         {
-            CalculateCommand = new RelayCommand(ExecuteCalculateCommand, q => From <= To);
+            CalculateCommand = new RelayCommand(ExecuteCalculateCommand, q => !string.IsNullOrWhiteSpace(Formula) && !_isCalculating && From <= To);
         }
 
-        private void ExecuteCalculateCommand(object parameter)
+        private bool _isCalculating;
+
+        private async void ExecuteCalculateCommand(object parameter)
         {
-            var cr = _compiler.Compile(formula);
-            if (cr.Errors.Count == 0)
+            _isCalculating = true;
+            CalculateCommand.RaiseCanExecuteChanged();
+            try
             {
-                var f = _compiler.GetLambda(cr);
-                Result = _calculator.Integrate(f, From, To);
-
-                var model = new PlotModel() { Title = "Equatation visualization." };
-                try
+                var cr = await _compiler.Compile(Formula).ConfigureAwait(false);
+                if (cr.Errors.Count == 0)
                 {
+                    var f = _compiler.GetLambda(cr);
+                    Result = await _calculator.Integrate(f, From, To);
+
+                    var model = new PlotModel() { Title = "Equatation visualization." };
                     model.Series.Add(new FunctionSeries(f, From, To, _dx));
-                }
-                catch { }
-                model.Axes.Add(new LinearAxis
-                {
-                    Position = AxisPosition.Bottom,
-                    MaximumPadding = 0.1,
-                    MinimumPadding = 0.1
-                });
-                model.Axes.Add(new LinearAxis
-                {
-                    Position = AxisPosition.Left,
-                    MaximumPadding = 0.1,
-                    MinimumPadding = 0.1
-                });
+                    model.Axes.Add(new LinearAxis
+                    {
+                        Position = AxisPosition.Bottom,
+                        MaximumPadding = 0.1,
+                        MinimumPadding = 0.1,
+                    });
+                    model.Axes.Add(new LinearAxis
+                    {
+                        Position = AxisPosition.Left,
+                        MaximumPadding = 0.1,
+                        MinimumPadding = 0.1,
+                    });
 
-                MainPlot = model;
+                    MainPlot = model;
+                }
+            }
+            catch(OutOfMemoryException ex) { }
+            finally
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    _isCalculating = false;
+                    CalculateCommand.RaiseCanExecuteChanged();
+                });
             }
         }
     }

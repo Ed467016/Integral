@@ -23,7 +23,7 @@
                          Margin="15 15 15 0" 
                          BorderThickness="2" 
                          BorderBrush="Black"
-                         Text="{Binding Formula}"
+                         Text="{Binding Formula, UpdateSourceTrigger=PropertyChanged}"
                          TextWrapping="Wrap"/>
 
                 <Grid Margin="15 15 15 0">
@@ -42,7 +42,7 @@
                     </TextBlock>
 
                     <TextBox PreviewTextInput="NumberValidationTextBox"
-                                 Text="{Binding From}"
+                                 Text="{Binding From, UpdateSourceTrigger=PropertyChanged}"
                                  Grid.Column="1"/>
 
                     <TextBlock Margin="0 5 5 5"
@@ -53,7 +53,7 @@
                     </TextBlock>
 
                     <TextBox PreviewTextInput="NumberValidationTextBox"
-                                 Text="{Binding To}"
+                                 Text="{Binding To, UpdateSourceTrigger=PropertyChanged}"
                                  Grid.Column="3"/>
                 </Grid>
                 <Grid Margin="15">

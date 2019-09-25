@@ -2,6 +2,7 @@
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.CSharp;
 
 namespace Integral.Compiler
@@ -25,10 +26,13 @@ namespace Integral.Compiler
             m_parameters.ReferencedAssemblies.Add("System.dll");
         }
 
-        public CompilerResults Compile(string code)
+        public Task<CompilerResults> Compile(string code)
         {
-            CompilerResults results = m_provider.CompileAssemblyFromSource(m_parameters, GetCode(code));
-            return results;
+            return Task.Run(() =>
+            {
+                CompilerResults results = m_provider.CompileAssemblyFromSource(m_parameters, GetCode(code));
+                return results;
+            });
         }
 
         public Func<double, double> GetLambda(CompilerResults cr)
