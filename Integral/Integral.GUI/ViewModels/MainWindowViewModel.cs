@@ -10,7 +10,7 @@ namespace Integral.GUI.ViewModels
         private IIntegral _calculator = new RectangleRuleIntegral();
         private readonly Compiler.Compiler _compiler = new Compiler.Compiler();
 
-        private double from;
+        private double from = -10;
         public double From
         {
             get { return from; }
@@ -22,7 +22,7 @@ namespace Integral.GUI.ViewModels
             }
         }
 
-        private double to;
+        private double to = 10;
         public double To
         {
             get { return to; }
@@ -34,7 +34,7 @@ namespace Integral.GUI.ViewModels
             }
         }
 
-        private int n;
+        private int n = 10;
         public int N
         {
             get { return n; }
@@ -46,7 +46,7 @@ namespace Integral.GUI.ViewModels
             }
         }
 
-        private string formula;
+        private string formula = "pow(x, 2) + x + 1";
 
         public string Formula
         {

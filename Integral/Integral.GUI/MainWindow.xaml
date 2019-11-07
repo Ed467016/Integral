@@ -11,7 +11,8 @@
             <ColumnDefinition Width="0.4*" />
             <ColumnDefinition Width="0.6*" />
         </Grid.ColumnDefinitions>
-        <StackPanel Orientation="Vertical">
+        <StackPanel Margin="15 15 15 0"
+                    Orientation="Vertical">
             <Button x:Name="rectangle"
                         Click="TabSelected"
                         FontSize="26"
@@ -122,8 +123,7 @@
                             <TextBlock Grid.Column="1"
                                        FontSize="26"
                                        Text="{Binding Result}"
-                                       VerticalAlignment="Center"
-                                       HorizontalAlignment="Center"/>
+                                       VerticalAlignment="Center"/>
                         </Grid>
                     </Border>
 
