@@ -3,7 +3,10 @@ using System.Windows.Input;
 
 namespace Integral.GUI.Infrastructure
 {
-    internal class RelayCommand : ICommand
+    /// <summary>
+    /// Stands for command pattern. MVVM action binding mechanism.
+    /// </summary>
+    public class RelayCommand : ICommand
     {
         private Action<object> action;
         private Func<object, bool> func;
@@ -20,8 +23,7 @@ namespace Integral.GUI.Infrastructure
 
         public void RaiseCanExecuteChanged()
         {
-            if (CanExecuteChanged != null)
-                CanExecuteChanged(this, new EventArgs());
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public bool CanExecute(object parameter)

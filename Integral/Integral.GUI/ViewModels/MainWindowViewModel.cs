@@ -1,23 +1,14 @@
-﻿using Integral.GUI.Infrastructure;
-using OxyPlot;
-using OxyPlot.Axes;
-using OxyPlot.Series;
+﻿using Integral.Calculator;
+using Integral.GUI.Infrastructure;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 
 namespace Integral.GUI.ViewModels
 {
     internal class MainWindowViewModel : ViewModelBase
     {
-        private readonly Calculator.Calculator _calculator = new Calculator.Calculator();
+        private IIntegral _calculator = new RectangleRuleIntegral();
         private readonly Compiler.Compiler _compiler = new Compiler.Compiler();
-        private const double _dx = 0.1;
 
         private double from;
         public double From
@@ -39,6 +30,18 @@ namespace Integral.GUI.ViewModels
             {
                 to = value;
                 OnPropertyChanged(nameof(To));
+                CalculateCommand.RaiseCanExecuteChanged();
+            }
+        }
+
+        private int n;
+        public int N
+        {
+            get { return n; }
+            set
+            {
+                n = value;
+                OnPropertyChanged(nameof(N));
                 CalculateCommand.RaiseCanExecuteChanged();
             }
         }
@@ -68,68 +71,61 @@ namespace Integral.GUI.ViewModels
             }
         }
 
-
-        private PlotModel mainPlot;
-
-        public PlotModel MainPlot
-        {
-            get { return mainPlot; }
-            set
-            {
-                mainPlot = value;
-                OnPropertyChanged(nameof(MainPlot));
-            }
-        }
-
-        public IPlotController Controller { get; set; } = new PlotController();
-
         public RelayCommand CalculateCommand { get; set; }
+        public RelayCommand ChangeAlgorithmCommand { get; set; }
 
         public MainWindowViewModel()
         {
-            CalculateCommand = new RelayCommand(ExecuteCalculateCommand, q => !string.IsNullOrWhiteSpace(Formula) && !_isCalculating && From <= To);
+            CalculateCommand = new RelayCommand(ExecuteCalculateCommand, q => !string.IsNullOrWhiteSpace(Formula) && !_isCalculating && From <= To && n > 0 && n < 1000);
+            ChangeAlgorithmCommand = new RelayCommand(ExecuteChangeAlgorithmCommand, q => true);
         }
 
         private bool _isCalculating;
 
+        /// <summary>
+        /// Calculates integral with given inputs.
+        /// </summary>
         private async void ExecuteCalculateCommand(object parameter)
         {
             _isCalculating = true;
             CalculateCommand.RaiseCanExecuteChanged();
-            try
+
+            // Compiles formula expression and gets function pointer on formula.
+            var cr = await _compiler.Compile(Formula).ConfigureAwait(false);
+            if (cr.Errors.Count == 0)
             {
-                var cr = await _compiler.Compile(Formula).ConfigureAwait(false);
-                if (cr.Errors.Count == 0)
-                {
-                    var f = _compiler.GetLambda(cr);
-                    Result = await _calculator.Integrate(f, From, To);
-
-                    var model = new PlotModel() { Title = "Equatation visualization." };
-                    model.Series.Add(new FunctionSeries(f, From, To, _dx));
-                    model.Axes.Add(new LinearAxis
-                    {
-                        Position = AxisPosition.Bottom,
-                        MaximumPadding = 0.1,
-                        MinimumPadding = 0.1,
-                    });
-                    model.Axes.Add(new LinearAxis
-                    {
-                        Position = AxisPosition.Left,
-                        MaximumPadding = 0.1,
-                        MinimumPadding = 0.1,
-                    });
-
-                    MainPlot = model;
-                }
+                // f is function pointer.
+                var f = _compiler.GetLambda(cr);
+                Result = await _calculator.Integrate(f, From, To, N);
             }
-            catch(OutOfMemoryException ex) { }
-            finally
+
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    _isCalculating = false;
-                    CalculateCommand.RaiseCanExecuteChanged();
-                });
+                // Enables "Calculate" button.
+                _isCalculating = false;
+                CalculateCommand.RaiseCanExecuteChanged();
+            });
+        }
+
+        /// <summary>
+        /// Factory method on algorithm strategy.
+        /// </summary>
+        /// <param name="parameter">Clicked algorithm identifier.</param>
+        private async void ExecuteChangeAlgorithmCommand(object parameter)
+        {
+            var param = Convert.ToInt16(parameter);
+
+            if (param == 0x01)
+            {
+                _calculator = new RectangleRuleIntegral();
+            }
+            else if (param == 0x02)
+            {
+                _calculator = new TableRuleIntegral();
+            }
+            else
+            {
+                _calculator = new SimpsonsRuleIntegral();
             }
         }
     }

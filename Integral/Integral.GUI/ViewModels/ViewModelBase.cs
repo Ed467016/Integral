@@ -2,7 +2,10 @@
 
 namespace Integral.GUI.ViewModels
 {
-    internal class ViewModelBase : INotifyPropertyChanged
+    /// <summary>
+    /// MVVM pattern implementation.
+    /// </summary>
+    public class ViewModelBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
